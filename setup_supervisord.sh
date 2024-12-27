@@ -12,7 +12,7 @@ SUPERVISOR_CONF_PATH="/etc/supervisor/conf.d/ai_chat_assist.conf"
 # Check if supervisor configuration file exists, if not, create it
 echo "Creating or updating supervisor configuration for ai_chat_assist..."
 
-cat > $SUPERVISOR_CONF_PATH << EOF
+sudo bash -c "cat > $SUPERVISOR_CONF_PATH << EOF
 [program:ai_chat_assist]
 command=/bin/bash /home/$USER/frappe_bench/ai_chat_assist/ai_chat_assist/start.sh
 autostart=true               # Ensure it starts on system boot
@@ -22,7 +22,7 @@ user=$USER                   # Run the script as the current user
 stdout_logfile=/var/log/ai_chat_assist.log
 stderr_logfile=/var/log/ai_chat_assist.err.log
 environment=USER=$USER       # Set USER environment variable dynamically
-EOF
+EOF"
 
 # Reload and update supervisor to apply the changes
 echo "Reloading and updating supervisor..."
