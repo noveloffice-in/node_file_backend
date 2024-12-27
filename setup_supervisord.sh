@@ -14,7 +14,7 @@ echo "Creating or updating supervisor configuration for ai_chat_assist..."
 
 sudo bash -c "cat > $SUPERVISOR_CONF_PATH << EOF
 [program:ai_chat_assist]
-command=/bin/bash /home/$USER/frappe_bench/ai_chat_assist/ai_chat_assist/start.sh
+command=/home/$USER/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend/start.sh
 autostart=true               # Ensure it starts on system boot
 autorestart=true             # Restart if it crashes
 startretries=3               # Retry 3 times if it fails to start
