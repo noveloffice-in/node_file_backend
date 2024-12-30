@@ -6,11 +6,11 @@ NODE_APP_PATH="/home/$USER/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_
 
 # Find and kill any process using port 4040
 PORT=4040
-PID=$(sudo lsof -t -i :$PORT)
+PID=$(lsof -t -i :$PORT)
 
 if [ ! -z "$PID" ]; then
     echo "Killing process $PID using port $PORT..."
-    sudo kill -9 $PID
+    kill -9 $PID
 else
     echo "No process is using port $PORT."
 fi
@@ -19,4 +19,4 @@ fi
 cd $NODE_APP_PATH
 
 # Start the Node.js application
-sudo node index.js
+node index.js
