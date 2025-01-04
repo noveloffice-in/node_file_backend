@@ -15,7 +15,8 @@ const io = new Server(server, {
             "https://noveloffice.in",
             "https://novelofficedfw.com",
         ],
-        origin: "*",
+        //-> Uncomment this if you want to allow everyone to access this
+        // origin: "*",
         methods: ['GET', 'POST'],
     }
 });
