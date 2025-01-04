@@ -50,13 +50,50 @@ app.get('/api/messages', async (req, res) => {
     }
 });
 
+// Queue to store the messages before sending them to the API
+const messageQueue = [];
+let isProcessing = false;
+
+// Function to process the message queue
+async function processQueue() {
+    if (isProcessing || messageQueue.length === 0) {
+        return;
+    }
+
+    isProcessing = true;
+
+    const message = messageQueue.shift();
+    try {
+        // Send the message to the API
+        const response = await axios.post(`${apiURL}/api/method/novelaichatassist`, {
+            request: "save_message",
+            session_id: message.room,
+            msg: message.msg,
+            user: message.username
+        });
+        console.log('Message saved:', response.data);
+
+        // Notify the room
+        io.to(message.room).emit("receive_message", {
+            msg: message.msg,
+            room: message.room,
+            username: message.username,
+        });
+    } catch (err) {
+        console.error('Error saving message:', err);
+    } finally {
+        // Continue processing the queue after handling the current message
+        isProcessing = false;
+        processQueue();
+    }
+}
+
 // Socket.io setup
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("join_room", ({ room, username }) => {
         console.log(`${username} joined room: ${room}`);
-
         // Join the socket room
         socket.join(room);
     });
@@ -78,27 +115,13 @@ io.on('connection', (socket) => {
         console.log('Client disconnected:', socket.id);
     });
 
+    // Handle sending messages
     socket.on("sendMessage", (data) => {
-        let apiData = {};
-        // Emit the message to the specific room with username
-        axios.post(`${apiURL}/api/method/novelaichatassist`, {
-            request: "save_message",
-            session_id: data.room,
-            msg: data.msg,
-            user: data.username
-        })
-            .then((res) => {
-                console.log(res.data);
-
-                socket.to(data.room).emit("receive_message", {
-                    msg: data.msg,
-                    room: data.room,
-                    username: data.username,
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+        console.log('Received message:', data);
+        // Add the message to the queue for processing
+        messageQueue.push(data);
+        // Start processing the queue if not already processing
+        processQueue();
     });
 });
 
