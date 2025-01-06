@@ -6,43 +6,68 @@ import axios from 'axios';
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: [
-            "http://localhost:5173",
-            "https://erpnoveloffice.in",
-            "https://noveloffice.in",
-            "https://novelofficedfw.com",
-        ],
+        // origin: [
+        //     "http://localhost:5173",
+        //     "https://erpnoveloffice.in",
+        //     "https://noveloffice.in",
+        //     "https://novelofficedfw.com",
+        // ],
         //-> Uncomment this if you want to allow everyone to access this
-        // origin: "*",
+        origin: "*",
         methods: ['GET', 'POST'],
     }
 });
 
-const apiURL = 'https://novelofficedfw.com';
+const apiURL = 'http://localhost:8000';
 
 // Basic route
 app.get('/', (req, res) => {
     res.send('Chat application is running!');
 });
 
-app.get('/chat-app', (req, res) => {
-    res.send('Chat application is running!');
+app.post('/api/v1/session', async (req, res) => {
+
+    const os = req.body.os;
+    const ip = req.body.ip;
+    try {
+        const response = await axios.post(`${apiURL}/api/method/novelaichatassist`, {
+            request: "create_doc",
+            "os": os,
+            "ip": ip
+        });
+        res.json(response.data.message);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+app.post('/api/v1/location', async (req, res) => {
+    try {
+        const response = await axios.post(`${apiURL}/api/method/novelaichatassist`, {
+            request: "add_location_details",
+            "session_id": req.body.sessionID,
+            "accuracy": req.body.accuracy,
+            "longitude": req.body.longitude,
+            "latitude": req.body.latitude
+        });
+        res.json(response.data.message);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
 });
 
 // API to fetch previous messages for a room
-app.get('/api/messages', async (req, res) => {
-    const room = req.query.room;
-    if (!room) {
-        return res.status(400).json({ error: 'Room is required' });
-    }
-
+app.post('/api/v1/messages', async (req, res) => {
     try {
         const response = await axios.post(`${apiURL}/api/method/novelaichatassist`, {
             request: "fetch_messages",
-            session_id: room,
+            session_id: req.body.session_id,
         });
         res.json({ message: response.data.message || [] });
     } catch (err) {
@@ -73,13 +98,6 @@ async function processQueue() {
             user: message.username
         });
         console.log('Message saved:', response.data);
-
-        // Notify the room
-        io.to(message.room).emit("receive_message", {
-            msg: message.msg,
-            room: message.room,
-            username: message.username,
-        });
     } catch (err) {
         console.error('Error saving message:', err);
     } finally {
@@ -91,38 +109,33 @@ async function processQueue() {
 
 // Socket.io setup
 io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
+
+    console.log('Client Connected:', socket.id);
 
     socket.on("join_room", ({ room, username }) => {
-        console.log(`${username} joined room: ${room}`);
-        // Join the socket room
-        socket.join(room);
+        username === "Guest" ? socket.join(room) : socket.join("agent_room");
     });
 
     socket.on("leave_room", ({ room, username }) => {
         socket.leave(room);
-        console.log(`${username} Left room: ${room}`);
     });
 
-    // Listen for client-sent events
-    socket.on('msgprint', (message) => {
-        console.log('Message from client:', message);
-        // Emit an event back to the client for confirmation
-        socket.emit('msgprint', `Server received: ${message}`);
-    });
-
-    // Handle client disconnect
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
 
-    // Handle sending messages
     socket.on("sendMessage", (data) => {
-        console.log('Received message:', data);
         // Add the message to the queue for processing
         messageQueue.push(data);
         // Start processing the queue if not already processing
         processQueue();
+        // Notify the room
+        data.room = data.username === "Guest" ? "agent_room" : data.room;
+        io.to(data.room).emit("receiveMessage", {
+            msg: data.msg,
+            room: data.room,
+            username: data.username,
+        });
     });
 });
 
