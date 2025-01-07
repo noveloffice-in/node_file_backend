@@ -3,26 +3,23 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
+const apiURL = process.env.API_URL;
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        // origin: [
-        //     "http://localhost:5173",
-        //     "https://erpnoveloffice.in",
-        //     "https://noveloffice.in",
-        //     "https://novelofficedfw.com",
-        // ],
-        //-> Uncomment this if you want to allow everyone to access this
-        origin: "*",
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
     }
 });
-
-const apiURL = 'http://localhost:8000';
 
 // Basic route
 app.get('/', (req, res) => {
