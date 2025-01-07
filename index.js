@@ -38,8 +38,8 @@ app.post('/api/v1/session', async (req, res) => {
         });
         res.json(response.data.message);
     } catch (err) {
-        console.error('Error fetching messages:', err);
-        res.status(500).json({ error: 'Failed to fetch messages' });
+        console.error('Error fetching session:', err);
+        res.status(500).json({ error: 'Failed to fetch session' });
     }
 });
 
