@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Add env file and these variables
+// ALLOWED_ORIGINS=""
+// API_URL=""
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
 console.log("Allowed Origins", allowedOrigins);
 const apiURL = process.env.API_URL;
