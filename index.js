@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
+console.log("Allowed Origins", allowedOrigins);
 const apiURL = process.env.API_URL;
 
 const server = http.createServer(app);
@@ -127,11 +128,12 @@ io.on('connection', (socket) => {
         // Start processing the queue if not already processing
         processQueue();
         // Notify the room
-        data.room = data.username === "Guest" ? "agent_room" : data.room;
-        io.to(data.room).emit("receiveMessage", {
+        let room = data.username === "Guest" ? "agent_room" : data.room;
+        io.to(room).emit("receiveMessage", {
             msg: data.msg,
-            room: data.room,
+            room: room,
             username: data.username,
+            sessionId: data.room
         });
     });
 });
