@@ -13,10 +13,13 @@ app.use(express.json());
 // Add env file and these variables
 // ALLOWED_ORIGINS=""
 // API_URL=""
+// API_KEY=""
+// API_SECRET=""
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS;
-console.log("Allowed Origins", allowedOrigins);
 const apiURL = process.env.API_URL;
+const apiKey = process.env.API_KEY;
+const apiSecret = process.env.API_SECRET;
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -40,7 +43,10 @@ app.post('/api/v1/session', async (req, res) => {
             request: "create_doc",
             "os": os,
             "ip": ip
-        });
+        },
+            {
+                headers: { Authorization: `token ${apiKey}:${apiSecret}` }
+            });
         res.json(response.data.message);
     } catch (err) {
         console.error('Error fetching session:', err);
@@ -56,7 +62,10 @@ app.post('/api/v1/location', async (req, res) => {
             "accuracy": req.body.accuracy,
             "longitude": req.body.longitude,
             "latitude": req.body.latitude
-        });
+        },
+            {
+                headers: { Authorization: `token ${apiKey}:${apiSecret}` }
+            });
         res.json(response.data.message);
     } catch (err) {
         console.error('Error fetching messages:', err);
@@ -70,7 +79,10 @@ app.post('/api/v1/messages', async (req, res) => {
         const response = await axios.post(`${apiURL}/api/method/novelaichatassist`, {
             request: "fetch_messages",
             session_id: req.body.session_id,
-        });
+        },
+            {
+                headers: { Authorization: `token ${apiKey}:${apiSecret}` }
+            });
         res.json({ message: response.data.message || [] });
     } catch (err) {
         console.error('Error fetching messages:', err);
@@ -98,7 +110,10 @@ async function processQueue() {
             session_id: message.room,
             msg: message.msg,
             user: message.username
-        });
+        },
+            {
+                headers: { Authorization: `token ${apiKey}:${apiSecret}` }
+            });
         console.log('Message saved:', response.data);
     } catch (err) {
         console.error('Error saving message:', err);
