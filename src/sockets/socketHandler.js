@@ -54,9 +54,14 @@ const socketHandler = (io) => (socket) => {
         }
         io.to(data.user).emit("assignedUserDetails", {
             sessionId: data.sessionId,
-            assignedUser: assignedUsers[data.sessionId]
+            assignedUser: assignedUsers[data.sessionId],
+            message: data.message,
         });
     });
+
+    socket.on("assignToMe", (data) => {
+        assignedUsers[data.sessionId] = data.user;
+    })
 };
 
 export default socketHandler;
