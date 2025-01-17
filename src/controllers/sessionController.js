@@ -1,4 +1,4 @@
-import { apiService } from '../services/apiService';
+import { apiService } from '../services/apiService.js';
 
 export const sessionController = async (req, res) => {
     const { os, ip } = req.body;

@@ -1,4 +1,4 @@
-import { apiService } from '../services/apiService';
+import { apiService } from '../services/apiService.js';
 
 let messageQueue = [];
 let isProcessing = false;

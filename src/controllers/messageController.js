@@ -1,4 +1,4 @@
-import { apiService } from '../services/apiService';
+import { apiService } from '../services/apiService.js';
 
 export const messageController = async (req, res) => {
     try {
