@@ -2,7 +2,7 @@
 
 USER=$(whoami)
 
-NODE_APP_PATH="/home/$USER/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend"
+NODE_APP_PATH="/home/$USER/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend/src"
 
 # Find and kill any process using port 4040
 PORT=4040
