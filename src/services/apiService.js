@@ -36,5 +36,9 @@ export const apiService = {
 
     saveMessage: (room, msg, username) => {
         return apiRequest('save_message', { session_id: room, msg, user: username });
+    },
+
+    addContactDetails: (sessionID, name, email, phone) => {
+        return apiRequest('add_contact_details', { session_id: sessionID, name, email, phone });
     }
 };

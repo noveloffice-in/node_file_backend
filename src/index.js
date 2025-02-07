@@ -7,7 +7,7 @@ import corsMiddleware from './middlewares/corsMiddleware.js';
 import { sessionController } from './controllers/sessionController.js';
 import { locationController } from './controllers/locationController.js';
 import { messageController } from './controllers/messageController.js';
-
+import { contactDetailsController } from './controllers/contactDetailsController.js';
 const app = express();
 app.use(corsMiddleware);
 app.use(express.json());
@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 app.post('/api/v1/session', sessionController);
 app.post('/api/v1/location', locationController);
 app.post('/api/v1/messages', messageController);
+app.post('/api/v1/updateContactDetails', contactDetailsController);
 
 const server = http.createServer(app);
 const io = new Server(server, {

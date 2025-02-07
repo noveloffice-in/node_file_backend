@@ -61,7 +61,15 @@ const socketHandler = (io) => (socket) => {
 
     socket.on("assignToMe", (data) => {
         assignedUsers[data.sessionId] = data.user;
-    })
+    });
+
+    socket.on("resolvedNotification", (data) => {
+        io.to("agent_room").emit("resolvedNotification", {
+            sessionId: data.sessionId,
+            assignedUser: data.username,
+            status: "resolved"
+        });
+    });
 };
 
 export default socketHandler;
