@@ -49,7 +49,7 @@ function deploy(res) {
         let user = process.env.USER;
         setTimeout(() => {
             return res.status(200).send(`Deployed successfully, optimistic response`);
-        }, 9000);
+        }, 7000);
         let result = execSync(`cd /home/${user}/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend/src/shellScripts && ./updateApplication.sh`, { encoding: "utf-8" });
         return res.status(200).send(`Deployed successfully: ${result}`);
     } catch (error) {
