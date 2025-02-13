@@ -1,14 +1,14 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import './config/envConfig.js';
-import socketHandler from './sockets/socketHandler.js'
-import corsMiddleware from './middlewares/corsMiddleware.js';
-import { sessionController } from './controllers/sessionController.js';
-import { locationController } from './controllers/locationController.js';
-import { messageController } from './controllers/messageController.js';
-import { contactDetailsController } from './controllers/contactDetailsController.js';
-import { deployController } from './controllers/deployController.js';
+import './src/config/envConfig.js';
+import socketHandler from './src/sockets/socketHandler.js'
+import corsMiddleware from './src/middlewares/corsMiddleware.js';
+import { sessionController } from './src/controllers/sessionController.js';
+import { locationController } from './src/controllers/locationController.js';
+import { messageController } from './src/controllers/messageController.js';
+import { contactDetailsController } from './src/controllers/contactDetailsController.js';
+import { deployController } from './src/controllers/deployController.js';
 
 const app = express();
 app.use(corsMiddleware);

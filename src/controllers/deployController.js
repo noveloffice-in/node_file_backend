@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -47,11 +47,8 @@ export const deployController = (req, res) => {
 function deploy(res) {
     try {
         let user = process.env.USER;
-        setTimeout(() => {
-            return res.status(200).send(`Deployed successfully, optimistic response`);
-        }, 7000);
-        let result = execSync(`cd /home/${user}/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend/src/shellScripts && ./updateApplication.sh`, { encoding: "utf-8" });
-        return res.status(200).send(`Deployed successfully: ${result}`);
+        exec(`cd /home/${user}/frappe-bench/apps/ai_chat_assist/ai_chat_assist/node_file_backend/src/shellScripts && ./updateApplication.sh`, { encoding: "utf-8" });
+        res.status(200).send(`Deployed successfully, optimistic response`);
     } catch (error) {
         console.error(`Deployment failed: ${error.message}`);
         return res.status(500).send(`Deployment failed: ${error.message}`);
