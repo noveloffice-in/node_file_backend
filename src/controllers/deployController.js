@@ -33,8 +33,14 @@ export const deployController = (req, res) => {
         return res.status(401).send(`Invalid signature ${req.headers['x-hub-signature-256']}`);
     }
 
+    if (req.body.action !== 'closed') {
+        return res.status(200).send(`Pull request not closed`);
+    }
+
     if (req.body.pull_request.base.ref === 'main') {
         deploy(res);
+    } else {
+        return res.status(200).send(`Pull request not merged to main`);
     }
 }
 

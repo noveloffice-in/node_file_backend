@@ -6,6 +6,9 @@ user=$(whoami)
 # Navigate to the ai_chat_assist directory and pull the latest changes
 cd /home/$user/frappe-bench/apps/ai_chat_assist && git pull
 
+# Set maintenance mode on
+bench set-maintenance-mode on
+
 # Run Bench migrate
 bench migrate
 
@@ -17,3 +20,6 @@ cd ../ai_chat_assist/node_file_backend && git pull && npm install
 
 # Restart all supervisor processes with sudo
 echo "$0ft%963$" | sudo -S supervisorctl restart all
+
+# Set maintenance mode off
+bench set-maintenance-mode off
