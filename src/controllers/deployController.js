@@ -1,8 +1,6 @@
 import crypto from 'crypto';
 import { exec } from 'child_process';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import '../config/envConfig.js';
 
 function verifySignature(req, res, buf, encoding) {
     const signature = req.headers['x-hub-signature-256']; // GitHub sends the signature here
