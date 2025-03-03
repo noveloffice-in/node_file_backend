@@ -22,8 +22,8 @@ const apiRequest = async (endpoint, data) => {
 };
 
 export const apiService = {
-    createSession: (os, ip) => {
-        return apiRequest('create_doc', { os, ip });
+    createSession: (os, ip, referrer) => {
+        return apiRequest('create_doc', { os, ip, referrer });
     },
 
     addLocation: (sessionID, accuracy, longitude, latitude) => {
@@ -34,8 +34,8 @@ export const apiService = {
         return apiRequest('fetch_messages', { session_id: sessionId });
     },
 
-    saveMessage: (room, msg, username) => {
-        return apiRequest('save_message', { session_id: room, msg, user: username });
+    saveMessage: (room, msg, username, messageType, agentEmail = "Guest", timeStamp) => {
+        return apiRequest('save_message', { session_id: room, msg, user: username, message_type: messageType, agent_email: agentEmail, time_stamp: timeStamp });
     },
 
     addContactDetails: (sessionID, name, email, phone) => {
