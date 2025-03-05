@@ -118,7 +118,7 @@ const socketHandler = (io) => (socket) => {
             room: data.sessionId,
             username: data.user,
             messageType: "Activity",
-            msg: `${data.user} has joined the chat.`,
+            msg: `${data.user} joined the chat`,
             agentEmail: data.agentEmail
         });
         processQueue();
@@ -140,7 +140,7 @@ const socketHandler = (io) => (socket) => {
         });
         io.to("agent_room").emit('agentTyping', {
             room: data.room,
-            username: data.agentName,
+            username: data.user,
             "typing": true
         });
     });
