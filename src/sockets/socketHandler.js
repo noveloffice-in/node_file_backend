@@ -2,7 +2,8 @@ import { apiService } from '../services/apiService.js';
 
 let messageQueue = [];
 let isProcessing = false;
-const assignedUsers = {};
+let assignedUsers = {};
+let onlineAgents = [];
 
 const getCurrentDateTime = () => {
     const now = new Date();
@@ -40,12 +41,20 @@ const processQueue = async () => {
     }
 };
 
+const updateAssignedUsersAndOnlineAgentsForTheFirstTimeLoad = async () => {
+    let response = await apiService.getAssignedUsersAndOnlineAgents();
+    assignedUsers = response.message.assignedUsers;
+    onlineAgents = response.message.onlineAgents;
+}
+updateAssignedUsersAndOnlineAgentsForTheFirstTimeLoad();
+
 const socketHandler = (io) => (socket) => {
     console.log('Client Connected:', socket.id);
 
     // General
     socket.on("join_room", ({ room, username }) => {
         socket.join(username === "Guest" ? room : "agent_room");
+        if(username === "Guest" && room === "agentAvailability") io.to("agentAvailability").emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
     });
 
     socket.on("leave_room", ({ room }) => {
@@ -155,6 +164,19 @@ const socketHandler = (io) => (socket) => {
         io.to(data.room).emit('agentLeft', {
             "typing": false
         });
+    });
+
+    socket.on('agentAvailability', (data) => {
+        if (data.isOnline && !onlineAgents.includes(data.agentEmail)) {
+            onlineAgents.push(data.agentEmail);
+        }
+
+        if (!data.isOnline && onlineAgents.includes(data.agentEmail)) {
+            onlineAgents = onlineAgents.filter(agent => agent !== data.agentEmail);
+        }
+
+        io.to('agentAvailability').emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
+        io.to('agent_room').emit("agentStatusUpdate", onlineAgents);
     });
 
     socket.on("resolvedNotification", (data) => {

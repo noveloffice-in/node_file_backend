@@ -40,5 +40,9 @@ export const apiService = {
 
     addContactDetails: (sessionID, name, email, phone) => {
         return apiRequest('add_contact_details', { session_id: sessionID, name, email, phone });
+    },
+
+    getAssignedUsersAndOnlineAgents: () => {
+        return apiRequest('get_assigned_users_and_online_agents', {});
     }
 };
