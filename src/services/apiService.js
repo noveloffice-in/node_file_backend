@@ -8,7 +8,7 @@ const apiSecret = process.env.API_SECRET;
 const apiRequest = async (endpoint, data) => {
     try {
         const response = await axios.post(
-            `${apiURL}/api/method/novelaichatassist`,
+            `${apiURL}/api/method/ai_chat_assist.api.novel_ai_chat_assist.request_handler`,
             { ...data, request: endpoint },
             {
                 headers: { Authorization: `token ${apiKey}:${apiSecret}` }
