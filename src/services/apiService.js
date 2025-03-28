@@ -44,5 +44,13 @@ export const apiService = {
 
     getAssignedUsersAndOnlineAgents: () => {
         return apiRequest('get_assigned_users_and_online_agents', {});
+    },
+
+    utils: () => {
+        return apiRequest('utils', {});
+    },
+    
+    updateFeedback: (sessionID, ratings, feedback) => {
+        return apiRequest('update_feedback', {session_id: sessionID, ratings, feedback});
     }
 };
