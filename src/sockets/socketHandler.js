@@ -53,7 +53,7 @@ const socketHandler = (io) => (socket) => {
 
     // General
     socket.on("join_room", ({ room, username }) => {
-        socket.join(username === "Guest" ? room : "agent_room");
+        socket.join(username === "Guest" ? room : "agentRoom");
         if(username === "Guest" && room === "agentAvailability") io.to("agentAvailability").emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
     });
 
@@ -70,7 +70,7 @@ const socketHandler = (io) => (socket) => {
         messageQueue.push(data);
         processQueue();
 
-        const room = data.username === "Guest" ? "agent_room" : data.room;
+        const room = data.username === "Guest" ? "agentRoom" : data.room;
         io.to(room).emit("receiveMessage", {
             msg: data.msg,
             room,
@@ -82,7 +82,7 @@ const socketHandler = (io) => (socket) => {
     });
 
     socket.on('guestTyping', (data) => {
-        io.to("agent_room").emit('guestTyping', {
+        io.to("agentRoom").emit('guestTyping', {
             room: data.room,
             username: data.username,
             msg: data.msg,
@@ -103,7 +103,7 @@ const socketHandler = (io) => (socket) => {
             });
             processQueue();
 
-            io.to("agent_room").emit('agentJoined', {
+            io.to("agentRoom").emit('agentJoined', {
                 room: data.sessionId,
                 msg: data.message,
                 username: data.user,
@@ -131,7 +131,7 @@ const socketHandler = (io) => (socket) => {
             agentEmail: data.agentEmail
         });
         processQueue();
-        io.to("agent_room").emit('agentJoined', {
+        io.to("agentRoom").emit('agentJoined', {
             room: data.sessionId,
             msg: data.message,
             username: data.user,
@@ -147,7 +147,7 @@ const socketHandler = (io) => (socket) => {
         io.to(data.room).emit('agentTyping', {
             "typing": true
         });
-        io.to("agent_room").emit('agentTyping', {
+        io.to("agentRoom").emit('agentTyping', {
             room: data.room,
             username: data.user,
             "typing": true
@@ -176,11 +176,16 @@ const socketHandler = (io) => (socket) => {
         }
 
         io.to('agentAvailability').emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
-        io.to('agent_room').emit("agentStatusUpdate", onlineAgents);
+        io.to('agentRoom').emit("agentStatusUpdate", onlineAgents);
+    });
+
+    socket.on("userAvailability", (data) => {
+        console.log("UserAvailability", data);
+        io.to("agentRoom").emit("userAvailability", data);
     });
 
     socket.on("resolvedNotification", (data) => {
-        io.to("agent_room").emit("resolvedNotification", {
+        io.to("agentRoom").emit("resolvedNotification", {
             sessionId: data.sessionId,
             assignedUser: data.username,
             status: "resolved"
