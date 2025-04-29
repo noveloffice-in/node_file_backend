@@ -54,7 +54,11 @@ const socketHandler = (io) => (socket) => {
     // General
     socket.on("join_room", ({ room, username }) => {
         socket.join(username === "Guest" ? room : "agentRoom");
-        if(username === "Guest" && room === "agentAvailability") io.to("agentAvailability").emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
+        if (username === "Guest" && room === "agentAvailability") {
+            setTimeout(() => {
+                io.to("agentAvailability").emit("agentStatusUpdate", Boolean(onlineAgents.length > 0));
+            }, 2000);
+        }
     });
 
     socket.on("leave_room", ({ room }) => {
@@ -98,7 +102,7 @@ const socketHandler = (io) => (socket) => {
                 room: data.sessionId,
                 username: data.user,
                 messageType: "Activity",
-                msg: `${data.user} joined the chat.`,
+                msg: `${data.user} has joined the chat.`,
                 agentEmail: data.agentEmail
             });
             processQueue();
@@ -127,7 +131,7 @@ const socketHandler = (io) => (socket) => {
             room: data.sessionId,
             username: data.user,
             messageType: "Activity",
-            msg: `${data.user} joined the chat`,
+            msg: `${data.user} has joined the chat.`,
             agentEmail: data.agentEmail
         });
         processQueue();
@@ -180,7 +184,6 @@ const socketHandler = (io) => (socket) => {
     });
 
     socket.on("userAvailability", (data) => {
-        console.log("UserAvailability", data);
         io.to("agentRoom").emit("userAvailability", data);
     });
 
@@ -190,6 +193,12 @@ const socketHandler = (io) => (socket) => {
             assignedUser: data.username,
             status: "resolved"
         });
+        if (data.resolved) {
+            io.to(data.sessionId).emit("resolved", {
+                sessionId: data.sessionId,
+                assignedUser: data.username,
+            });
+        }
     });
 };
 
